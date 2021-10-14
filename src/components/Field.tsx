@@ -1,21 +1,24 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
+//import React, {useState, useEffect} from 'react';
 import { Paragraph } from '@contentful/forma-36-react-components';
-import { FieldExtensionSDK, AppExtensionSDK } from '@contentful/app-sdk';
+import { FieldExtensionSDK } from '@contentful/app-sdk';
+// import { FieldExtensionSDK, AppExtensionSDK } from '@contentful/app-sdk';
+
 
 interface FieldProps {
   sdk: FieldExtensionSDK;
 }
 
-interface Parameters {
-  clientId: string;
-  munchkinId: string;
-  clientSecret: string;
-}
+// interface Parameters {
+//   clientId: string;
+//   munchkinId: string;
+//   clientSecret: string;
+// }
 
-interface FormObject {
-  title: string;
-  id: string;
-}
+// interface FormObject {
+//   title: string;
+//   id: string;
+// }
 
 
 const Field = (props: FieldProps) => {

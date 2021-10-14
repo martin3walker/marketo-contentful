@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { AppExtensionSDK } from '@contentful/app-sdk';
-import { Heading, Form, Workbench, Paragraph, TextField, TextFieldProps } from '@contentful/forma-36-react-components';
+import { Heading, Form, Workbench, Paragraph, TextField } from '@contentful/forma-36-react-components';
 import { css } from 'emotion';
 
 export interface AppInstallationParameters {
