@@ -24,6 +24,7 @@
   },
   "scripts": {
     "start": "cross-env BROWSER=none react-scripts start",
+    "start:https": "cross-env BROWSER=none HTTPS=true SSL_CRT_FILE=../../server.crt SSL_KEY_FILE=../../server.key react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
