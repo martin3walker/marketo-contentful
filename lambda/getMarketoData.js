@@ -13,8 +13,8 @@ const request = ({ method, hostname, path, headers }) =>
   });
 
 const getMarketoData = async (clientId, clientSecret, munchkinId) => {
-// Get Marketo Bearer Token
   try {
+    // Get Marketo Bearer Token
     const auth = await request(
       {
         method: "GET",
@@ -47,9 +47,10 @@ const getMarketoData = async (clientId, clientSecret, munchkinId) => {
 
 
 exports.handler =  async (event) => {
+  // Check if this is the options pre-request or the actual request
   if (event.body) {
     const {clientId, clientSecret, munchkinId} = JSON.parse(event.body);
-    if (!clientId){
+    if (!clientId || clientId === "") {
       return {
         statusCode: 400,
         headers: {
@@ -58,9 +59,9 @@ exports.handler =  async (event) => {
           "Access-Control-Allow-Headers": "Content-Type",
           "Content-Type": "application/json"
         },
-        body: "Check client id"
+        body: JSON.stringify({message: "Check that a valid client id is included in your parameters."})
       }
-    } else if (!clientSecret) {
+    } else if (!clientSecret || clientSecret === "") {
       return {
         statusCode: 400,
         headers: {
@@ -69,9 +70,10 @@ exports.handler =  async (event) => {
           "Access-Control-Allow-Headers": "Content-Type",
           "Content-Type": "application/json"
         },
-        body: "Check client secret"
+        body: JSON.stringify({message: "Check that a valid marketo client secret is included in your parameters."})
       }
-    } else if (!munchkinId) {
+    } else if (!munchkinId || munchkinId === "") {
+      console.log("check is working")
       return {
         statusCode: 400,
         headers: {
@@ -80,7 +82,7 @@ exports.handler =  async (event) => {
           "Access-Control-Allow-Headers": "Content-Type",
           "Content-Type": "application/json"
         },
-        body: "Check munchkin id"
+        body: JSON.stringify({message: "Check that a valid marketo munchkin id is included in your parameters."})
       }
     }
 
@@ -94,10 +96,9 @@ exports.handler =  async (event) => {
           "Access-Control-Allow-Headers": "Content-Type",
           "Content-Type": "application/json"
         },
-        body: "Bad request to marketo"
+        body: JSON.stringify({message:"Bad request to marketo"})
       }
     } else {
-      const data = JSON.stringify(marketoData)
       return {
         statusCode: 200,
         headers: {
@@ -106,7 +107,7 @@ exports.handler =  async (event) => {
           "Access-Control-Allow-Headers": "Content-Type",
           "Content-Type": "application/json"
         },
-        body: data
+        body: JSON.stringify(marketoData)
       }
     }
   }

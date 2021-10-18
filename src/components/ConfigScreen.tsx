@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { AppExtensionSDK } from '@contentful/app-sdk';
-import { Heading, Form, Workbench, Paragraph, TextField } from '@contentful/forma-36-react-components';
+import { Button, Heading, HelpText, Form, FieldGroup, Flex, Workbench, Paragraph, TextField, TextLink, Notification } from '@contentful/forma-36-react-components';
 import { css } from 'emotion';
 
 export interface AppInstallationParameters {
@@ -13,6 +13,13 @@ export interface AppInstallationParameters {
 interface ConfigProps {
   sdk: AppExtensionSDK;
 }
+
+interface ValidationProps {
+  display: boolean;
+  intent?: 'success' | 'error'
+  message?: string;
+}
+
 
 const Config = (props: ConfigProps) => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({});
@@ -63,38 +70,103 @@ const Config = (props: ConfigProps) => {
       setParameters(newParameters);
     }
 
+    const testConnection:() => void = async () => {
+      try {
+        const response = await fetch("http://localhost:9999/.netlify/functions/getMarketoData", {
+          method: "POST",
+          body: JSON.stringify(parameters),
+          headers: {
+            "Access-Control-Request-Method": "POST",
+            "Content-Type": "application/json"
+          }
+        })
+        if (response.status === 200) {
+          Notification.success("Your connection to the Marketo API is working.")
+        } else {
+          const body = await response.json();
+          Notification.error(body.message)
+        }
+      } catch(error) {
+        console.log(error);
+      }
+    }
 
   return (
-    <Workbench className={css({ margin: '80px' })}>
-      <Form>
-        <Heading>App Config</Heading>
-        <Paragraph>Welcome to your contentful app. This is your config page.</Paragraph>
-        <TextField 
-          required 
-          name="clientId" 
-          id="clientId" 
-          labelText="Marketo Client ID" 
-          onChange={(event) => handleFieldChange(event)} 
-          value={parameters.clientId}
-        />
-        <TextField 
-          required 
-          name="clientSecret" 
-          id="clientSecret" 
-          labelText="Marketo Client Secret" 
-          onChange={(event) => handleFieldChange(event)} 
-          value={parameters.clientSecret}
-        />
-        <TextField 
-          required 
-          name="munchkinId" 
-          id="munchkinId" 
-          labelText="Marketo Munchkin Id" 
-          onChange={(event) => handleFieldChange(event)} 
-          value={parameters.munchkinId}
-        />
-      </Form>
-    </Workbench>
+    <>
+      <Workbench className={css({ margin: '30px 80px 0px' })}>
+        <Flex fullWidth justifyContent="center">
+          <Form>
+            <Heading>Marketo App Configuration</Heading>
+            <Paragraph>
+              Please configure your application with the following credentials. Press "Save" in the top right corner when you have finished.
+            </Paragraph>
+            <FieldGroup>
+              <TextField 
+                required 
+                name="clientId" 
+                id="clientId" 
+                labelText="Marketo Client ID" 
+                onChange={(event) => handleFieldChange(event)} 
+                value={parameters.clientId}
+              />
+              <TextLink
+                href="https://developers.marketo.com/rest-api/authentication/#creating_an_access_token" 
+                target="_blank" 
+                rel="noreferrer">
+                  How to find your Client ID
+              </TextLink>
+            </FieldGroup>
+            <FieldGroup>
+              <TextField 
+                required 
+                name="clientSecret" 
+                id="clientSecret" 
+                labelText="Marketo Client Secret" 
+                onChange={(event) => handleFieldChange(event)} 
+                value={parameters.clientSecret}
+              />
+              <TextLink
+                href="https://developers.marketo.com/rest-api/authentication/#creating_an_access_token" 
+                target="_blank" 
+                rel="noreferrer">
+                  How to find your Client Secret
+              </TextLink>
+            </FieldGroup>
+            <FieldGroup>
+              <TextField 
+                required 
+                name="munchkinId" 
+                id="munchkinId" 
+                labelText="Marketo Munchkin Id" 
+                onChange={(event) => handleFieldChange(event)} 
+                value={parameters.munchkinId}
+              />
+              <TextLink
+                href="https://nation.marketo.com/t5/knowledgebase/how-to-find-your-munchkin-id-for-a-marketo-instance/ta-p/248432" 
+                target="_blank" 
+                rel="noreferrer">
+                  How to find your Munchkin ID
+              </TextLink>
+              <HelpText>
+                It is also the first part of the rest/identity endpoints as described <TextLink
+                href="https://developers.marketo.com/rest-api/authentication/#creating_an_access_token" 
+                target="_blank" 
+                rel="noreferrer">
+                  here
+              </TextLink>.
+              <br/>
+              For instance, for the url 'https://064-CCJ-768.mktorest.com/idenity', '064-CCJ-768' would be the munchkin id.
+              </HelpText>
+            </FieldGroup>
+            <Button
+              onClick={() => testConnection()}
+            >
+              {"Test marketo connection"}
+            </Button>
+          </Form>
+        </Flex>
+      </Workbench>
+    </>
   );
 }
 
