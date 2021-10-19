@@ -57,7 +57,7 @@ const Field = (props: FieldProps) => {
     //Get list of available forms to from Marketo selection
      (async () => {
         try {
-          const response = await(await fetch("http://localhost:9999/.netlify/functions/getMarketoData", {
+          const response = await ( await fetch(`${process.env.REACT_APP_ENDPOINT || "https://marketo-app.netlify.app"}/.netlify/functions/getMarketoData`, {
             method: "POST",
             body: JSON.stringify(props.sdk.parameters.installation),
             headers: {
@@ -96,9 +96,6 @@ const Field = (props: FieldProps) => {
         <Flex flexDirection={"column"} fullHeight={true} style={{minHeight: 500}}>
           {props.sdk.field.getValue() && (
             <Flex flexDirection={"column"} marginBottom={"spacingL"}>
-              {/* <Paragraph style={{marginBottom: 10}}>
-                Selected form
-              </Paragraph> */}
               <Flex flexWrap={"wrap"}>
                 {selectedForm && (
                   <Pill  

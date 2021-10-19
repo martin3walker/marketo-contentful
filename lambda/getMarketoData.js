@@ -73,7 +73,6 @@ exports.handler =  async (event) => {
         body: JSON.stringify({message: "Check that a valid marketo client secret is included in your parameters."})
       }
     } else if (!munchkinId || munchkinId === "") {
-      console.log("check is working")
       return {
         statusCode: 400,
         headers: {
@@ -86,17 +85,17 @@ exports.handler =  async (event) => {
       }
     }
 
-    const marketoData = await getMarketoData(clientId, clientSecret, munchkinId)
+    const marketoData = await getMarketoData(clientId, clientSecret, munchkinId);
     if (marketoData.error) {
       return {
         statusCode: 400,
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          // "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "POST",
           "Access-Control-Allow-Headers": "Content-Type",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({message:"Bad request to marketo"})
+        body: JSON.stringify({message: `Bad request to marketo: ${marketoData.message}`})
       }
     } else {
       return {
@@ -120,6 +119,6 @@ exports.handler =  async (event) => {
       "Access-Control-Allow-Headers": "Content-Type",
       "Content-Type": "application/json"
     },
-    body: ""
+    body: JSON.stringify({message: "Options preflight"})
   }
 }

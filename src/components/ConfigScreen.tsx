@@ -14,15 +14,15 @@ interface ConfigProps {
   sdk: AppExtensionSDK;
 }
 
-interface ValidationProps {
-  display: boolean;
-  intent?: 'success' | 'error'
-  message?: string;
-}
-
 
 const Config = (props: ConfigProps) => {
-  const [parameters, setParameters] = useState<AppInstallationParameters>({});
+  const [parameters, setParameters] = useState<AppInstallationParameters>(
+    {
+      clientId: "", 
+      clientSecret: "", 
+      munchkinId: ""
+    }
+  );
 
   // Updates app configuration by calling this function as a callback in the app.sdk.onConfigure function
   const configureApp = useCallback(async () => {
@@ -72,7 +72,7 @@ const Config = (props: ConfigProps) => {
 
     const testConnection:() => void = async () => {
       try {
-        const response = await fetch("http://localhost:9999/.netlify/functions/getMarketoData", {
+        const response = await fetch(`${process.env.REACT_APP_ENDPOINT || "https://marketo-app.netlify.app"}/.netlify/functions/getMarketoData`, {
           method: "POST",
           body: JSON.stringify(parameters),
           headers: {
@@ -87,6 +87,7 @@ const Config = (props: ConfigProps) => {
           Notification.error(body.message)
         }
       } catch(error) {
+        Notification.error("Check console for errors.");
         console.log(error);
       }
     }
