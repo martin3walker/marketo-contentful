@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import { Dropdown, DropdownList, DropdownListItem, Select, Option,Flex, Paragraph, Pill, TextInput, Spinner} from '@contentful/forma-36-react-components';
+import React, {useState, useEffect, ChangeEvent} from 'react';
+import { Select, Option, Flex, Paragraph,  Spinner} from '@contentful/forma-36-react-components';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
 
 import styled from "styled-components";
@@ -16,6 +16,7 @@ interface FormObject {
 
 const StyledDropdownContainer = styled.div`
   width: 100%;
+  position: relative;
   > .dropdown {
     width: 100%;
     padding: 10px;
@@ -26,31 +27,21 @@ const StyledDropdownContainer = styled.div`
 const Field = (props: FieldProps) => {
   const [forms, updateForms] = useState<FormObject[] | null>(null);
   const [selectedForm, updateSelectedForm] = useState<FormObject | null>(null);
-  const [dropdownForms, updateDropdownForms] = useState<FormObject[] | null>(null);
   const [loadingData, updateLoadingStatus] = useState(true);
+  const [error, updateError] = useState({error: false, message:""})
 
   props.sdk.window.startAutoResizer()
 
-  const updateFieldValue = (item:FormObject) => {
-    if (item.id === selectedForm?.id) {
+  const updateFieldValue = (event:ChangeEvent<HTMLSelectElement>) => {
+    const id = event.target.value
+    const form = forms?.find(form => form.id.toString() === id);
+    if (id === "none") {
       props.sdk.field.setValue(null);
       updateSelectedForm(null);
       return;
     }
-    props.sdk.field.setValue(item);
-    updateSelectedForm(item);
-  }
-
-  const getDropdownData = (searchTerm:string) => {
-    if(forms) {
-      const newDropdownData = [...forms].filter((item:FormObject) => {
-        return item.name.toLowerCase().includes(searchTerm.toLocaleLowerCase())
-      })
-  
-      return newDropdownData;
-    }
-
-    return null;
+    props.sdk.field.setValue(form);
+    updateSelectedForm(form || null);
   }
 
   useEffect (() => {
@@ -68,8 +59,9 @@ const Field = (props: FieldProps) => {
   
           if(response.result) {
             updateForms(response.result); 
-            updateDropdownForms(response.result);
             updateLoadingStatus(false);
+          } else {
+            updateError({error: true, message: "Something is wrong with the Marketo App. Please ask a space admin to check the configuration."})
           }
         }
         catch (error) {
@@ -85,59 +77,54 @@ const Field = (props: FieldProps) => {
 
   }, [props.sdk]) //Think about this
 
+
   return (
     <>
       {loadingData ? (
-        <Paragraph>
-          Loading Marketo data <Spinner color={"primary"}/>
-        </Paragraph>
+        <>
+          {error.error ? (
+            <Paragraph>
+              {error.message}
+            </Paragraph>
+          ): (
+            <Paragraph>
+              Loading Marketo data <Spinner color={"primary"}/>
+            </Paragraph>
+          )}
+        </>
       ):
       (
-        <Flex flexDirection={"column"} fullHeight={true} style={{minHeight: 500}}>
-          {props.sdk.field.getValue() && (
-            <Flex flexDirection={"column"} marginBottom={"spacingL"}>
-              <Flex flexWrap={"wrap"}>
-                {selectedForm && (
-                  <Pill  
-                    label={selectedForm.name} 
-                    onClose={() => updateFieldValue(selectedForm)} 
-                    key={selectedForm.id}
-                  />
-                )}
-              </Flex>
-            </Flex>
-          )}
-
-          {dropdownForms && dropdownForms.length > 0 ? (
+        <Flex flexDirection={"column"} fullHeight={true} >
+          {forms && forms.length > 0 && (
             <>
-              <Flex marginBottom={'spacingS'}>
-                <TextInput 
-                  onChange={(event) => updateDropdownForms(getDropdownData(event.target.value))} placeholder="Search for a form"
-                />
-              </Flex>
               <Flex>
                 <StyledDropdownContainer>
-                  <Dropdown
-                    isOpen={true}
-                    dropdownContainerClassName={"dropdown"}
+                  <Select
+                    name="forms"
+                    id="forms"
+                    onChange={(event) => updateFieldValue(event)}
+                    value={selectedForm ? selectedForm.id : "none"}
                   >
-                    <DropdownList className={"dropdown-list"}>
-                      {dropdownForms.map((item) => (
-                        <DropdownListItem 
-                          onClick={() => updateFieldValue(item)} 
-                          isActive={selectedForm ? selectedForm.id === item.id : false} 
+                      <Option
+                        id={"none"}
+                        key={"No form"}
+                        value={"none"}
+                      >
+                        {selectedForm ? "Remove form" : "Select a form"}
+                      </Option>
+                      {forms.map((item) => (
+                        <Option
+                          disabled={selectedForm ? selectedForm.id === item.id : false} 
                           key={`key-${item.id}`}
+                          value={item.id}
                         >
                           {item.name}
-                        </DropdownListItem>
+                        </Option>
                       ))}
-                    </DropdownList>
-                  </Dropdown>
+                  </Select>
                 </StyledDropdownContainer>
               </Flex>
             </>
-          ):(
-            <Paragraph>Try expanding your search</Paragraph>
           )}
         </Flex>
       )}
