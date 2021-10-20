@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Dropdown, DropdownList, DropdownListItem, Flex, Paragraph, Pill, TextInput, Spinner} from '@contentful/forma-36-react-components';
+import { Dropdown, DropdownList, DropdownListItem, Select, Option,Flex, Paragraph, Pill, TextInput, Spinner} from '@contentful/forma-36-react-components';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
 
 import styled from "styled-components";
@@ -121,7 +121,7 @@ const Field = (props: FieldProps) => {
                     isOpen={true}
                     dropdownContainerClassName={"dropdown"}
                   >
-                    <DropdownList className={"dropdown-list"} maxHeight={500}>
+                    <DropdownList className={"dropdown-list"}>
                       {dropdownForms.map((item) => (
                         <DropdownListItem 
                           onClick={() => updateFieldValue(item)} 
