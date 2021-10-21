@@ -1,4 +1,30 @@
-This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app).
+This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app). (See more about Create Contentful App below.)
+
+## App Components
+
+### Connection to Marketo Rest API
+*Important*
+Unfortunately, Marketo does not allow responses in the browser from the [identity endpoint](https://developers.marketo.com/rest-api/endpoint-reference/authentication-endpoint-reference/), which is used for [Authenticating with the Marketo REST API](https://developers.marketo.com/rest-api/authentication/). Therefore, we are using a serverless function hosted by Netlify to retrieve the data.
+
+The users credentials are posted to the netlify endpoint, which triggers a request from an AWS server (where our function lives) to the Marketo API. The netlify endpoint then eventually returns the data from the Marketo API.
+
+If the middle step, of going through Netlify is removed, the app will break.
+
+The function can be found in the `lambda` folder. If you edit it and push to the repo it will trigger a rebuild of the function hosted on Netlify.
+
+If you want to test the function locally, two things need to be done:
+  1. Run `npm run serve:function`. You will need to install the [Netlify CLI Tool](https://cli.netlify.com/) if you have not already for this to work.
+  2. In your `.env` file set REACT_APP_ENDPOINT=http://localhost:9999 (Or whatever port you decide to run the function on. 9999 is the default.) This will allow you to make changes to your function and get immediate feedback in a test environment.
+
+### Config Screen
+
+This app contains a `ConfigScreen.tsx` file, where the user sets the parameters for the connection to the Marketo API. They are also able to test their connection to the Marketo API on the configuration screen. Hopefully this will help reduce errors in field itself.
+
+### Field
+
+The field section of the app is rendered on top of the contentful json field. This allows to return all of the relevant information about a particular form in a single object, to be used on the frontend.
+
+The field is rendered using the Select and Option comopnents from [Forma36](https://f36-storybook.contentful.com/?path=/story/documentation-general--page). It retrieves all of the possible forms from an instance of Marketo using the [Marketo REST API](https://developers.marketo.com/rest-api/endpoint-reference/), and renders the data as options for a user to select.
 
 ## Available Scripts
 

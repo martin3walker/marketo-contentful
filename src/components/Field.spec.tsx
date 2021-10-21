@@ -1,5 +1,6 @@
 import React from 'react';
 import Field from './Field';
+import  { init, FieldExtensionSDK } from '@contentful/app-sdk';
 import { render } from '@testing-library/react';
 
 describe('Field component', () => {
