@@ -1,5 +1,5 @@
 import React, {useState, useEffect, ChangeEvent} from 'react';
-import { Select, Option, Flex, Paragraph,  Spinner} from '@contentful/forma-36-react-components';
+import { Button, Select, Option, Flex, Paragraph,  Spinner} from '@contentful/forma-36-react-components';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
 
 import styled from "styled-components";
@@ -14,16 +14,6 @@ interface FormObject {
   id: string;
 }
 
-const StyledDropdownContainer = styled.div`
-  width: 100%;
-  position: relative;
-  > .dropdown {
-    width: 100%;
-    padding: 10px;
-  }
-`
-
-
 const Field = (props: FieldProps) => {
   const [forms, updateForms] = useState<FormObject[] | null>(null);
   const [selectedForm, updateSelectedForm] = useState<FormObject | null>(null);
@@ -36,12 +26,16 @@ const Field = (props: FieldProps) => {
     const id = event.target.value
     const form = forms?.find(form => form.id.toString() === id);
     if (id === "none") {
-      props.sdk.field.setValue(null);
-      updateSelectedForm(null);
-      return;
+      removeFieldValue();
     }
     props.sdk.field.setValue(form);
     updateSelectedForm(form || null);
+  }
+
+  const removeFieldValue = () => {
+    props.sdk.field.setValue(null);
+    updateSelectedForm(null);
+    return;
   }
 
   useEffect (() => {
@@ -97,33 +91,36 @@ const Field = (props: FieldProps) => {
         <Flex flexDirection={"column"} fullHeight={true} >
           {forms && forms.length > 0 && (
             <>
-              <Flex>
-                <StyledDropdownContainer>
-                  <Select
-                    name="forms"
-                    id="forms"
-                    onChange={(event) => updateFieldValue(event)}
-                    value={selectedForm ? selectedForm.id : "none"}
+              <Select
+                name="forms"
+                id="forms"
+                onChange={(event) => updateFieldValue(event)}
+                value={selectedForm ? selectedForm.id : "none"}
+              >
+                  <Option
+                    id={"none"}
+                    key={"No form"}
+                    value={"none"}
                   >
-                      <Option
-                        id={"none"}
-                        key={"No form"}
-                        value={"none"}
-                      >
-                        {selectedForm ? "Remove form" : "Select a form"}
-                      </Option>
-                      {forms.map((item) => (
-                        <Option
-                          disabled={selectedForm ? selectedForm.id === item.id : false} 
-                          key={`key-${item.id}`}
-                          value={item.id}
-                        >
-                          {item.name}
-                        </Option>
-                      ))}
-                  </Select>
-                </StyledDropdownContainer>
-              </Flex>
+                    {selectedForm ? "Remove form" : "Select a form"}
+                  </Option>
+                  {forms.map((item) => (
+                    <Option
+                      disabled={selectedForm ? selectedForm.id === item.id : false} 
+                      key={`key-${item.id}`}
+                      value={item.id}
+                    >
+                      {item.name}
+                    </Option>
+                  ))}
+              </Select>
+              {selectedForm && (
+                <Flex marginTop={"spacingS"}>
+                  <Button onClick={(() => removeFieldValue())}>
+                    Remove Form
+                  </Button>
+                </Flex>
+              )}
             </>
           )}
         </Flex>

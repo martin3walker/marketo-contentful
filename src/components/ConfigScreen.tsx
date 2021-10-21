@@ -23,6 +23,7 @@ const Config = (props: ConfigProps) => {
       munchkinId: ""
     }
   );
+  const [loading, setLoadingStatus] = useState(false);
 
   // Updates app configuration by calling this function as a callback in the app.sdk.onConfigure function
   const configureApp = useCallback(async () => {
@@ -72,6 +73,7 @@ const Config = (props: ConfigProps) => {
 
     const testConnection:() => void = async () => {
       try {
+        setLoadingStatus(true);
         const response = await fetch(`${process.env.REACT_APP_ENDPOINT || "https://marketo-app.netlify.app"}/.netlify/functions/getMarketoData`, {
           method: "POST",
           body: JSON.stringify(parameters),
@@ -86,6 +88,7 @@ const Config = (props: ConfigProps) => {
           const body = await response.json();
           Notification.error(body.message)
         }
+        setLoadingStatus(false)
       } catch(error) {
         Notification.error("Check console for errors.");
         console.log(error);
@@ -161,8 +164,9 @@ const Config = (props: ConfigProps) => {
             </FieldGroup>
             <Button
               onClick={() => testConnection()}
+              loading={loading}
             >
-              {"Test marketo connection"}
+              Test marketo connection
             </Button>
           </Form>
         </Flex>
