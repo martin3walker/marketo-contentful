@@ -4,6 +4,7 @@ This project was bootstrapped with [Create Contentful App](https://github.com/co
 
 ### Connection to Marketo Rest API
 *Important*
+
 Unfortunately, Marketo does not allow responses in the browser from the [identity endpoint](https://developers.marketo.com/rest-api/endpoint-reference/authentication-endpoint-reference/), which is used for [Authenticating with the Marketo REST API](https://developers.marketo.com/rest-api/authentication/). Therefore, we are using a serverless function hosted by Netlify to retrieve the data.
 
 The users credentials are posted to the netlify endpoint, which triggers a request from an AWS server (where our function lives) to the Marketo API. The netlify endpoint then eventually returns the data from the Marketo API.
