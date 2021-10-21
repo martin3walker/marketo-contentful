@@ -2,9 +2,6 @@ import React, {useState, useEffect, ChangeEvent} from 'react';
 import { Button, Select, Option, Flex, Paragraph,  Spinner} from '@contentful/forma-36-react-components';
 import { FieldExtensionSDK } from '@contentful/app-sdk';
 
-import styled from "styled-components";
-
-
 interface FieldProps {
   sdk: FieldExtensionSDK;
 }
