@@ -7,8 +7,9 @@ interface FieldProps {
 }
 
 interface FormObject {
-  name: string;
   id: string;
+  url: string;
+  name: string;
 }
 
 const Field = (props: FieldProps) => {
@@ -25,7 +26,7 @@ const Field = (props: FieldProps) => {
     if (id === "none") {
       removeFieldValue();
     }
-    props.sdk.field.setValue(form);
+    props.sdk.field.setValue({id: form?.id, url:form?.url});
     updateSelectedForm(form || null);
   }
 
@@ -49,7 +50,14 @@ const Field = (props: FieldProps) => {
           })).json()
   
           if(response.result) {
-            updateForms(response.result); 
+            const mappedResponse = response.result.map((item:FormObject) => {
+              return {
+                id:item.id,
+                url: item.url,
+                name: item.name
+              }
+            })
+            updateForms(mappedResponse); 
             updateLoadingStatus(false);
           } else {
             updateError({error: true, message: "Something is wrong with the Marketo App. Please ask a space admin to check the configuration."})

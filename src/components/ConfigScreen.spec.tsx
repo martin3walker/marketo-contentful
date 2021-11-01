@@ -33,7 +33,9 @@ describe('Config inputs work', () => {
 
     screen.getAllByTestId('cf-ui-text-input').forEach((input, i) => {
       expect(input).toHaveValue(`A test value for input ${i}`)
+      expect(mockSdk.onConfigure).toHaveBeenCalled()
     })
+
   });
 });
 
