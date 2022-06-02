@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create Contentful App](https://github.com/contentful/create-contentful-app). (See more about Create Contentful App below.)
+Allows contentful users to add forms to entries in Contentful.
 
 ## App Components
 
